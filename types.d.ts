@@ -33,5 +33,6 @@ type Statistics = {
         callback: (view: View) => void
       ) => UnsubscribeFunction;
       sendFrameAction: (payload: FrameWindowAction) => void;
+      getSystemMetricsLogs: () => void;
     };
   }

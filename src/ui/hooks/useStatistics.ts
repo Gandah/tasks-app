@@ -1,22 +1,37 @@
 import { useEffect, useState } from 'react';
 
-export function useStatistics(dataPointCount: number): Statistics[] {
-  const [value, setValue] = useState<Statistics[]>([]);
+type StatsHistory = (Statistics & {timestamp: string})[]
+export function useStatistics(dataPointCount: number) {
+  const [value, setValue] = useState<StatsHistory>([]);
+  const [generalStats, setGeneralStats] = useState({
+    cpuUsage: 0,
+    ramUsage: 0,
+    storageUsage: 0
+  });
 
   useEffect(() => {
-    const unsub = window.electron.subscribeStatistics((stats) =>
-      setValue((prev) => {
-        const newData = [...prev, stats];
+    const unsub = window.electron.subscribeStatistics((stats) => {
+      setGeneralStats(stats)
+      const statWithTimestamp = {
+        ...stats,
+        timestamp: new Date().toLocaleTimeString()
+      };
 
+      setValue((prev) => {
+        const newData = [...prev, statWithTimestamp];
+       
         if (newData.length > dataPointCount) {
           newData.shift();
         }
 
         return newData;
-      })
+      })}
     );
     return unsub;
   }, []);
 
-  return value;
+  return {
+    statsHistory: value,
+    generalStats : generalStats
+  };
 }

@@ -11,6 +11,7 @@ electron.contextBridge.exposeInMainWorld('electron', {
       }),
     getStaticData: () => ipcInvoke('getStaticData'),
     sendFrameAction: (payload) => ipcSend('sendFrameAction', payload),
+    getSystemMetricsLogs: () => electron.ipcRenderer.invoke('get-logs'),
   } satisfies Window['electron']);
 
 function ipcInvoke<Key extends keyof EventPayloadMapping>(
@@ -34,5 +35,6 @@ function ipcInvoke<Key extends keyof EventPayloadMapping>(
   ) {
     electron.ipcRenderer.send(key, payload);
   }
+
 
 

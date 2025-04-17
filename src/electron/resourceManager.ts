@@ -5,6 +5,8 @@ import os from 'os';
 import { ipcWebContentsSend } from './utils.js';
 
 
+
+
 const POLLING_INTERVAL = 500;
 export function pollResources(mainWindow: BrowserWindow) {
     setInterval(async () => {
@@ -12,21 +14,21 @@ export function pollResources(mainWindow: BrowserWindow) {
         const ramUsage = getRamUsage();
         const storageData = getStorageData();
         ipcWebContentsSend('statistics', mainWindow.webContents, { cpuUsage, ramUsage, storageUsage:storageData.usage })
-        console.log({ cpuUsage, ramUsage, storageUsage:storageData.usage });
-     
+        
     }, POLLING_INTERVAL);
+  
 }
 
-function getCpuUsage(): Promise<number>{
+export function getCpuUsage(): Promise<number>{
     return new Promise((resolve) => {
         osUtils.cpuUsage(resolve);
     });
 }
-function getRamUsage(){
+export function getRamUsage(){
     return 1 - osUtils.freememPercentage();
 }
 
-function getStorageData() {
+export function getStorageData() {
     // requires node 18
     const stats = fs.statfsSync(process.platform === 'win32' ? 'C://' : '/');
     const total = stats.bsize * stats.blocks;
@@ -49,3 +51,8 @@ function getStorageData() {
       totalMemoryGB,
     };
   }
+
+
+
+
+
